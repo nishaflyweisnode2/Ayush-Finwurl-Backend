@@ -1,0 +1,24 @@
+[
+  {
+    "_id": "64fb2598e720b99402a41514",
+    "loanId": "64cdd9bafbb9f74f2cce6ae8",
+    "__v": 0,
+    "createdAt": "2023-09-08T13:46:01.054Z",
+    "data": {
+      "lan": null,
+      "rejectReason": null,
+      "selectedOfferDetails": {
+        "loanAmount": 10000,
+        "roi": 25.3,
+        "tenure": 6,
+        "emi": 2000,
+        "preEmiInterest": 170,
+        "finalProcessingFee": 4600,
+        "firstEmiAmount": 4800,
+        "firstEmiDate": "2022-12-03T18:30:00.000Z"
+      }
+    },
+    "eventName": "ops_approved",
+    "updatedAt": "2023-09-08T13:46:01.054Z"
+  }
+]
