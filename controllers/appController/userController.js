@@ -9,6 +9,7 @@ const decryption = require("./../../func/decryption");
 const jwt = require('jsonwebtoken');
 require("dotenv").config();
 const Notification = require('../../models/notificationModel');
+const LoanApply = require('./../../models/loanApplyModel');
 
 
 
@@ -408,3 +409,25 @@ exports.calculateLoan = async (req, res) => {
     }
 };
 
+exports.getAllLoanDetails = async (req, res) => {
+    try {
+        const allLoanDetails = await LoanApply.find();
+        return res.status(200).json({ status: 200, data: allLoanDetails });
+    } catch (error) {
+        console.error('Error getting all loan details:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.getLoanDetailById = async (req, res) => {
+    try {
+        const loanDetail = await LoanApply.findById(req.params.id);
+        if (!loanDetail) {
+            return res.status(404).json({ status: 404, message: 'Loan detail not found' });
+        }
+        return res.status(200).json({ status: 200, data: loanDetail });
+    } catch (error) {
+        console.error('Error getting loan detail by ID:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};

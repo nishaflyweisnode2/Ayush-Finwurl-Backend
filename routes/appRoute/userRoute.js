@@ -18,6 +18,8 @@ router.put("/user/edit-profile", [authJwt.verifyToken], auth.editProfile);
 router.get("/user/profile", [authJwt.verifyToken], auth.getUserProfile);
 router.get("/user/profile/:userId", [authJwt.verifyToken], auth.getUserProfileById);
 router.post('/user/calculateLoan', [authJwt.verifyToken], auth.calculateLoan);
+router.get('/user/loan-details', [authJwt.verifyToken], auth.getAllLoanDetails);
+router.get('/user/loan-details/:id', [authJwt.verifyToken], auth.getLoanDetailById);
 
 
 

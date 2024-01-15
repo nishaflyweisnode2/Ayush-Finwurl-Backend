@@ -3,13 +3,9 @@ const mongoose = require('mongoose');
 const loanDetailsSchema = new mongoose.Schema({
     mainTitle: { type: String },
     mainDescription: { type: String },
-    data: [
-        {
-            title: String,
-            description: String,
-            image: String
-        }
-    ]
+    title: { type: String },
+    description: { type: String },
+    image: { type: String },
 });
 
 const LoanDetails = mongoose.model('ApplyLoan', loanDetailsSchema);

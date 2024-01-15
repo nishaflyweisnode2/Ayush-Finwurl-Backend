@@ -7,11 +7,13 @@ cloudinary.config({ cloud_name: authConfig.cloud_name, api_key: authConfig.api_k
 
 
 
-const storage = new CloudinaryStorage({ cloudinary: cloudinary, params: { folder: "Sajid-Bike-Backend/profileImage", allowed_formats: ["jpg", "jpeg", "png", "PNG", "xlsx", "xls", "pdf", "PDF"], }, });
+const storage = new CloudinaryStorage({ cloudinary: cloudinary, params: { folder: "AyushFinwurl/profileImage", allowed_formats: ["jpg", "jpeg", "png", "PNG", "xlsx", "xls", "pdf", "PDF"], }, });
 const profileImage = multer({ storage: storage });
+const storage1 = new CloudinaryStorage({ cloudinary: cloudinary, params: { folder: "AyushFinwurl/loanDetails", allowed_formats: ["jpg", "jpeg", "png", "PNG", "xlsx", "xls", "pdf", "PDF"], }, });
+const loanDetails = multer({ storage: storage1 });
+const storage2 = new CloudinaryStorage({ cloudinary: cloudinary, params: { folder: "Pawan-Sharma-Backend/categoryImage", allowed_formats: ["jpg", "jpeg", "png", "PNG", "xlsx", "xls", "pdf", "PDF"], }, });
+const categoryImage = multer({ storage: storage2 });
 
 
 
-
-
-module.exports = { profileImage, }
+module.exports = { profileImage, loanDetails, categoryImage }
