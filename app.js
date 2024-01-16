@@ -39,7 +39,6 @@ const stashfinRouter = require("./routes/stashfin")
 const webhookRouter = require("./routes/webhook")
 const userRouter = require("./routes/user")
 const leadsRouter = require("./routes/leads")
-const userRoutes = require("./routes/appRoute/userRoute")
 const adminRoutes = require("./routes/appRoute/adminRoute")
 
 // Routes
@@ -49,7 +48,6 @@ app.use("/api/v1/stashfin", stashfinRouter)
 app.use("/api", webhookRouter)
 app.use("/api/v1/user", userRouter)
 app.use("/api/v1/leads", leadsRouter)
-app.use("/api/v1/appUser", userRoutes)
 app.use("/api/v1/admin", adminRoutes)
 
 

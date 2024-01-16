@@ -4,6 +4,8 @@ const nodemailer = require("nodemailer");
 const appPassword = process.env.EMAIL_APP_PASSWORD;
 const encryption = require("./../../func/encryption");
 const decryption = require("./../../func/decryption");
+const jwt = require('jsonwebtoken');
+
 
 const signup_partner = async (req, res) => {
   try {
@@ -37,7 +39,7 @@ const signup_partner = async (req, res) => {
           email
         )}`,
       });
-      
+
       if (referral_link) {
 
         const decrypted_email = decryption(referral_link);
@@ -133,7 +135,9 @@ const verify_otp = async (req, res) => {
     const { email, otp } = req.body;
     const loggedInUser = await User.findOne({ email: email });
     if (loggedInUser.otp == otp) {
-      const token = await loggedInUser.createJWT();
+      // const token = await loggedInUser.createJWT();
+      const token = jwt.sign({ _id: loggedInUser._id }, 'FINURL_98', { expiresIn: '365d' });
+      console.log("token", token);
       await User.findOneAndUpdate(
         { email: email },
         {
