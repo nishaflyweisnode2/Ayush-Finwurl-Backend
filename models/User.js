@@ -88,7 +88,7 @@ const UserSchema = new mongoose.Schema(
     },
     isDSA: {
       type: Boolean,
-      required: true,
+      // required: true,
     },
     loans: {
       type: [],

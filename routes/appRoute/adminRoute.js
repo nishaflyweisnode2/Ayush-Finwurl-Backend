@@ -5,7 +5,7 @@ const auth = require("../../controllers/appController/adminController")
 
 const authJwt = require("../../middlewares/auth");
 
-const { profileImage, loanDetails, categoryImage } = require('../../middlewares/imageUpload');
+const { profileImage, loanDetails, categoryImage, bannerImage } = require('../../middlewares/imageUpload');
 
 
 // api/user/
@@ -32,6 +32,10 @@ router.get('/api/admin/forAdminCategories', /*[authJwt.isAdmin],*/ auth.getAllCa
 router.get('/api/admin/categories/:categoryId', [authJwt.isAdmin], auth.getCategoryById);
 router.put('/api/admin/categories/:categoryId', [authJwt.isAdmin], categoryImage.single('image'), auth.updateCategory);
 router.delete('/api/admin/categories/:categoryId', [authJwt.isAdmin], auth.deleteCategory);
-
+router.post('/api/admin/banners', [authJwt.isAdmin], bannerImage.single('image'), auth.createBanner);
+router.get('/api/admin/banners', [authJwt.isAdmin], auth.getAllBanners);
+router.get('/api/admin/banners/:id', [authJwt.isAdmin], auth.getBannerById);
+router.put('/api/admin/banners/:id', [authJwt.isAdmin], bannerImage.single('image'), auth.updateBannerById);
+router.delete('/api/admin/banners/:id', [authJwt.isAdmin], auth.deleteBannerById);
 
 module.exports = router;

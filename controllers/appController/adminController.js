@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken');
 require("dotenv").config();
 const Notification = require('../../models/notificationModel');
 const Category = require('../../models/categoryModel');
+const Banner = require('../../models/bannerModel');
 
 
 
@@ -39,7 +40,6 @@ exports.register = async (req, res) => {
         const user = new User({
             name,
             phoneNumber,
-            otp: generateOtp(),
             referralCode,
             userType: "Admin",
             email,
@@ -83,7 +83,8 @@ exports.login = async (req, res) => {
         user.isVerified = true;
         await user.save();
 
-        const token = jwt.sign({ _id: user._id }, process.env.SECRET, { expiresIn: process.env.ACCESS_TOKEN_TIME });
+        // const token = jwt.sign({ _id: user._id }, process.env.SECRET, { expiresIn: process.env.ACCESS_TOKEN_TIME });
+        const token = jwt.sign({ _id: user._id }, 'FINURL_98', { expiresIn: '365d' });
 
         return res.status(200).json({ status: 200, message: 'Login successful', token, data: user });
     } catch (error) {
@@ -490,5 +491,92 @@ exports.deleteCategory = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({ status: 500, message: 'Category deletion failed', error: error.message });
+    }
+};
+
+exports.createBanner = async (req, res) => {
+    try {
+        const { title, description, isActive } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ status: 400, error: "Image file is required" });
+        }
+
+        const newBanner = await Banner.create({
+            title,
+            description,
+            image: req.file.path,
+            isActive,
+        });
+
+        return res.status(201).json({ status: 201, message: 'Banner created successfully', data: newBanner });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: 'Server error' });
+    }
+};
+
+exports.getAllBanners = async (req, res) => {
+    try {
+        const banners = await Banner.find();
+        return res.status(200).json({ status: 200, message: 'Banners retrieved successfully', data: banners });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: 'Server error' });
+    }
+};
+
+exports.getBannerById = async (req, res) => {
+    try {
+        const bannerId = req.params.id;
+        const banner = await Banner.findById(bannerId);
+
+        if (!banner) {
+            return res.status(404).json({ status: 404, message: 'Banner not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Banner retrieved successfully', data: banner });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: 'Server error' });
+    }
+};
+
+exports.updateBannerById = async (req, res) => {
+    try {
+        const bannerId = req.params.id;
+        const updateFields = req.body;
+
+        if (req.file) {
+            updateFields.image = req.file.path;
+        }
+
+        const updatedBanner = await Banner.findByIdAndUpdate(bannerId, updateFields, { new: true });
+
+        if (!updatedBanner) {
+            return res.status(404).json({ status: 404, message: 'Banner not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Banner updated successfully', data: updatedBanner });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: 'Server error' });
+    }
+};
+
+exports.deleteBannerById = async (req, res) => {
+    try {
+        const bannerId = req.params.id;
+
+        const deletedBanner = await Banner.findByIdAndDelete(bannerId);
+
+        if (!deletedBanner) {
+            return res.status(404).json({ status: 404, message: 'Banner not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Banner deleted successfully', data: deletedBanner });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: 'Server error' });
     }
 };
