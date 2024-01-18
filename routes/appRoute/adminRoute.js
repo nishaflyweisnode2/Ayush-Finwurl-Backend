@@ -5,7 +5,7 @@ const auth = require("../../controllers/appController/adminController")
 
 const authJwt = require("../../middlewares/auth");
 
-const { profileImage, loanDetails, categoryImage, bannerImage } = require('../../middlewares/imageUpload');
+const { profileImage, loanDetails, categoryImage, bannerImage, subCategory, creditImage } = require('../../middlewares/imageUpload');
 
 
 // api/user/
@@ -28,7 +28,6 @@ router.put('/api/admin/loan-details/:id', [authJwt.isAdmin], loanDetails.single(
 router.delete('/api/admin/loan-details/:id', [authJwt.isAdmin], auth.deleteLoanDetailById);
 router.post('/api/admin/categories', [authJwt.isAdmin], categoryImage.single('image'), auth.createCategory);
 router.get('/api/admin/categories', [authJwt.isAdmin], auth.getAllCategories);
-router.get('/api/admin/forAdminCategories', /*[authJwt.isAdmin],*/ auth.getAllCategoriesForAdmin);
 router.get('/api/admin/categories/:categoryId', [authJwt.isAdmin], auth.getCategoryById);
 router.put('/api/admin/categories/:categoryId', [authJwt.isAdmin], categoryImage.single('image'), auth.updateCategory);
 router.delete('/api/admin/categories/:categoryId', [authJwt.isAdmin], auth.deleteCategory);
@@ -37,5 +36,20 @@ router.get('/api/admin/banners', [authJwt.isAdmin], auth.getAllBanners);
 router.get('/api/admin/banners/:id', [authJwt.isAdmin], auth.getBannerById);
 router.put('/api/admin/banners/:id', [authJwt.isAdmin], bannerImage.single('image'), auth.updateBannerById);
 router.delete('/api/admin/banners/:id', [authJwt.isAdmin], auth.deleteBannerById);
+router.post("/SubCategory/createCategory", [authJwt.isAdmin], subCategory.single('image'), auth.createSubCategory);
+router.get("/SubCategory/:categoryId", [authJwt.isAdmin], auth.getSubCategories);
+router.get("/getAllSubCategories", [authJwt.isAdmin], auth.getAllSubCategories);
+router.put("/SubCategory/update/:id", [authJwt.isAdmin], subCategory.single('image'), auth.updateSubCategory);
+router.delete("/SubCategory/delete/:id", [authJwt.isAdmin], auth.removeSubCategory);
+router.post('/financial-terms', [authJwt.isAdmin], creditImage.array('image'), auth.createFinancialTerm);
+router.get('/financial-terms', [authJwt.isAdmin], auth.getAllFinancialTerms);
+router.get('/financial-terms/:termId', [authJwt.isAdmin], auth.getFinancialTermById);
+router.put('/financial-terms/:termId/images', [authJwt.isAdmin], creditImage.array('image'), auth.updateFinancialTerm);
+router.delete('/financial-terms/:termId', [authJwt.isAdmin], auth.deleteFinancialTerm);
+router.put('/financial-terms/:termId/images/:imageId', creditImage.single('image'), [authJwt.isAdmin], auth.updateFinancialTermImageFileById);
+
+
+
+
 
 module.exports = router;

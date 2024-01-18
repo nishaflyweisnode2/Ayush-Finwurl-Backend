@@ -11,7 +11,9 @@ const jwt = require('jsonwebtoken');
 require("dotenv").config();
 const Notification = require('../../models/notificationModel');
 const Category = require('../../models/categoryModel');
+const SubCategory = require('../../models/subCategoryModel');
 const Banner = require('../../models/bannerModel');
+const FinancialTerm = require('../../models/creditInfoModel');
 
 
 
@@ -378,12 +380,8 @@ exports.deleteLoanDetailById = async (req, res) => {
 
 exports.createCategory = async (req, res) => {
     try {
-        const { error } = categorySchema.validate(req.body);
-        if (error) {
-            return res.status(400).json({ status: 400, message: error.details[0].message });
-        }
 
-        const { name } = req.body;
+        const { name, status } = req.body;
 
         if (!req.file) {
             return res.status(400).json({ status: 400, error: "Image file is required" });
@@ -391,6 +389,7 @@ exports.createCategory = async (req, res) => {
 
         const category = new Category({
             name,
+            status,
             image: req.file.path,
         });
 
@@ -413,24 +412,9 @@ exports.getAllCategories = async (req, res) => {
     }
 };
 
-exports.getAllCategoriesForAdmin = async (req, res) => {
-    try {
-        const categories = await Category.find();
-        return res.status(200).json({ status: 200, data: categories });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ status: 500, message: 'Error fetching categories', error: error.message });
-    }
-};
-
 exports.getCategoryById = async (req, res) => {
     try {
         const categoryId = req.params.categoryId;
-
-        const { error } = categoryIdSchema.validate({ categoryId });
-        if (error) {
-            return res.status(400).json({ status: 400, message: error.details[0].message });
-        }
 
         const category = await Category.findById(categoryId);
 
@@ -448,18 +432,24 @@ exports.getCategoryById = async (req, res) => {
 exports.updateCategory = async (req, res) => {
     try {
         const categoryId = req.params.categoryId;
-        const { name } = req.body;
 
-        const { error } = updateCategorySchema.validate({ categoryId, name });
-        if (error) {
-            return res.status(400).json({ status: 400, message: error.details[0].message });
+        const findCategory = await Category.findById(categoryId);
+        if (!findCategory) {
+            return res.status(404).json({ message: "Category Not Found", status: 404, data: {} });
+        }
+        let fileUrl;
+        if (req.file) {
+            fileUrl = req.file ? req.file.path : "";
         }
 
-        if (!req.file) {
-            return res.status(400).json({ status: 400, error: "Image file is required" });
-        }
+        let obj = {
+            name: req.body.name || findCategory.name,
+            status: req.body.status || findCategory.status,
+            description: req.body.description || findCategory.description,
+            image: fileUrl || findCategory.image,
 
-        const category = await Category.findByIdAndUpdate(categoryId, { name, image: req.file.path, }, { new: true });
+        }
+        const category = await Category.findByIdAndUpdate({ _id: categoryId }, { $set: obj }, { new: true });
 
         if (!category) {
             return res.status(404).json({ status: 404, message: 'Category not found' });
@@ -475,11 +465,6 @@ exports.updateCategory = async (req, res) => {
 exports.deleteCategory = async (req, res) => {
     try {
         const categoryId = req.params.categoryId;
-
-        const { error } = categoryIdSchema.validate({ categoryId });
-        if (error) {
-            return res.status(400).json({ status: 400, message: error.details[0].message });
-        }
 
         const category = await Category.findByIdAndDelete(categoryId);
 
@@ -580,3 +565,231 @@ exports.deleteBannerById = async (req, res) => {
         return res.status(500).json({ status: 500, error: 'Server error' });
     }
 };
+
+exports.createSubCategory = async (req, res) => {
+    try {
+        let findCategory = await Category.findOne({ _id: req.body.categoryId });
+        if (!findCategory) {
+            return res.status(404).json({ message: "Category Not Found", status: 404, data: {} });
+        } else {
+            let findSubCategory = await SubCategory.findOne({ categoryId: findCategory._id, name: req.body.name });
+            if (findSubCategory) {
+                return res.status(409).json({ message: "Sub Category already exit.", status: 404, data: {} });
+            } else {
+                let fileUrl;
+                if (req.file) {
+                    fileUrl = req.file ? req.file.path : "";
+                }
+                const data = { categoryId: findCategory._id, name: req.body.name, image: fileUrl, description: req.body.description, colourPicker: req.body.colourPicker, status: req.body.status };
+                const category = await SubCategory.create(data);
+                return res.status(200).json({ message: "Sub Category add successfully.", status: 200, data: category });
+            }
+        }
+    } catch (error) {
+        return res.status(500).json({ status: 500, message: "internal server error ", data: error.message, });
+    }
+};
+
+exports.getSubCategories = async (req, res) => {
+    let findCategory = await Category.findOne({ _id: req.params.categoryId });
+    if (!findCategory) {
+        return res.status(404).json({ message: "Category Not Found", status: 404, data: {} });
+    } else {
+        let findSubCategory = await SubCategory.find({ categoryId: findCategory._id, }).populate('name').populate('categoryId', 'name')
+        if (findSubCategory.length > 0) {
+            return res.status(200).json({ message: "Sub Category Found", status: 200, data: findSubCategory, });
+        } else {
+            return res.status(201).json({ message: "Sub Category not Found", status: 404, data: {}, });
+        }
+    }
+};
+
+exports.getAllSubCategories = async (req, res) => {
+    let findSubCategory = await SubCategory.find().populate('name').populate('categoryId', 'name')
+    if (findSubCategory.length > 0) {
+        return res.status(200).json({ message: "Sub Category Found", status: 200, data: findSubCategory, });
+    } else {
+        return res.status(201).json({ message: "Sub Category not Found", status: 404, data: {}, });
+    }
+};
+
+exports.updateSubCategory = async (req, res) => {
+    const { id } = req.params;
+    const findSubCategory = await SubCategory.findById(id);
+    if (!findSubCategory) {
+        return res.status(404).json({ message: "Sub Category Not Found", status: 404, data: {} });
+    }
+    if (req.body.categoryId != (null || undefined)) {
+        let findCategory = await Category.findOne({ _id: req.body.categoryId });
+        if (!findCategory) {
+            return res.status(404).json({ message: "Category Not Found", status: 404, data: {} });
+        }
+    }
+    let fileUrl;
+    if (req.file) {
+        fileUrl = req.file ? req.file.path : "";
+    }
+    let obj = {
+        name: req.body.name || findSubCategory.name,
+        categoryId: req.body.categoryId || findSubCategory.categoryId,
+        status: req.body.status || findSubCategory.status,
+        description: req.body.description || findSubCategory.description,
+        image: fileUrl || findSubCategory.image,
+
+    }
+    let update = await SubCategory.findByIdAndUpdate({ _id: findSubCategory._id }, { $set: obj }, { new: true });
+    return res.status(200).json({ message: "Updated Successfully", data: update });
+};
+
+exports.removeSubCategory = async (req, res) => {
+    const { id } = req.params;
+    const category = await SubCategory.findById(id);
+    if (!category) {
+        return res.status(404).json({ message: "Sub Category Not Found", status: 404, data: {} });
+    } else {
+        await SubCategory.findByIdAndDelete(category._id);
+        return res.status(200).json({ message: "Sub Category Deleted Successfully !" });
+    }
+};
+
+exports.createFinancialTerm = async (req, res) => {
+    try {
+        const { category, name, description } = req.body;
+
+        let images = [];
+        if (req.files) {
+            for (let j = 0; j < req.files.length; j++) {
+                let obj = {
+                    img: req.files[j].path,
+                };
+                images.push(obj);
+            }
+        }
+
+        const newTerm = await FinancialTerm.create({
+            category,
+            name,
+            description,
+            images,
+        });
+
+        res.status(201).json({ status: 201, message: 'Financial term created successfully', data: newTerm });
+    } catch (error) {
+        console.error('Error creating financial term:', error);
+        res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.getAllFinancialTerms = async (req, res) => {
+    try {
+        const financialTerms = await FinancialTerm.find().populate('category');
+        return res.status(200).json({ status: 200, data: financialTerms });
+    } catch (error) {
+        console.error('Error fetching financial terms:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.getFinancialTermById = async (req, res) => {
+    try {
+        const { termId } = req.params;
+        const financialTerm = await FinancialTerm.findOne({ _id: termId }).populate('category');
+
+        if (!financialTerm) {
+            return res.status(404).json({ status: 404, message: 'Financial term not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: financialTerm });
+    } catch (error) {
+        console.error('Error fetching financial term:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.updateFinancialTerm = async (req, res) => {
+    try {
+        const { termId } = req.params;
+        const { name, description, category } = req.body;
+
+        let updatedFields = { images: [] };
+
+        if (req.files) {
+            for (let j = 0; j < req.files.length; j++) {
+                let obj = {
+                    img: req.files[j].path,
+                };
+                updatedFields.images.push(obj);
+            }
+        }
+
+        if (name) {
+            updatedFields.name = name;
+        }
+
+        if (description) {
+            updatedFields.description = description;
+        }
+
+        if (category) {
+            updatedFields.category = category;
+        }
+
+        const updatedTerm = await FinancialTerm.findOneAndUpdate(
+            { _id: termId },
+            { $set: updatedFields },
+            { new: true }
+        );
+
+        if (!updatedTerm) {
+            return res.status(404).json({ status: 404, message: 'Financial term not found' });
+        }
+
+        res.status(200).json({ status: 200, message: 'Financial term updated successfully', data: updatedTerm });
+    } catch (error) {
+        console.error('Error updating financial term:', error);
+        res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.deleteFinancialTerm = async (req, res) => {
+    try {
+        const { termId } = req.params;
+
+        const deletedTerm = await FinancialTerm.findOneAndDelete({ _id: termId });
+
+        if (!deletedTerm) {
+            return res.status(404).json({ status: 404, message: 'Financial term not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Financial term deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting financial term:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.updateFinancialTermImageFileById = async (req, res) => {
+    try {
+        const { termId, imageId } = req.params;
+
+        if (!req.file) {
+            return res.status(400).json({ status: 400, error: "Image file is required" });
+        }
+
+        const updatedTerm = await FinancialTerm.findOneAndUpdate(
+            { _id: termId, 'images._id': imageId },
+            { $set: { 'images.$.img': req.file.path } },
+            { new: true }
+        );
+
+        if (!updatedTerm) {
+            return res.status(404).json({ status: 404, message: 'Financial term or image not found' });
+        }
+
+        res.status(200).json({ status: 200, message: 'Financial term image file updated successfully', data: updatedTerm });
+    } catch (error) {
+        console.error('Error updating financial term image file:', error);
+        res.status(500).json({ status: 500, error: error.message });
+    }
+};
+

@@ -25,6 +25,12 @@ const verifyToken = (req, res, next) => {
                         message: "The user that this token belongs to does not exist",
                     });
                 }
+                if (user.userType !== "User") {
+                    return res.status(403).send({
+                        message: "Access prohibited. User role is required!",
+                    });
+                }
+
                 req.user = user;
                 next();
             } catch (error) {

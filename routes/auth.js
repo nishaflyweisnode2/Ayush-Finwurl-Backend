@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { login_cofounder, login_cofounder_verify_otp} = require("./../controllers/auth/auth_admin")
-const { signup_partner, login_partner, verify_otp} = require("./../controllers/auth/auth_partner")
+const { login_cofounder, login_cofounder_verify_otp } = require("./../controllers/auth/auth_admin")
+const { signup_partner, login_partner, verify_otp } = require("./../controllers/auth/auth_partner")
 const { signup_user } = require("./../controllers/auth/auth_user")
 const { reset_password_send_otp, reset_pass_verify_otp, reset_password } = require("./../controllers/auth/reset_password")
 
@@ -31,5 +31,20 @@ router.get("/user/profile/:userId", [authJwt.verifyToken], auth.getUserProfileBy
 router.post('/user/calculateLoan', [authJwt.verifyToken], auth.calculateLoan);
 router.get('/user/loan-details', [authJwt.verifyToken], auth.getAllLoanDetails);
 router.get('/user/loan-details/:id', [authJwt.verifyToken], auth.getLoanDetailById);
+router.get('/user/categories', [authJwt.verifyToken], auth.getAllCategories);
+router.get("/user/SubCategory/:categoryId", [authJwt.verifyToken], auth.getSubCategories);
+router.get("/user/getAllSubCategories", [authJwt.verifyToken], auth.getAllSubCategories);
+router.get('/user/categories/:categoryId', [authJwt.verifyToken], auth.getCategoryById);
+router.post('/user/eligibility-checks', [authJwt.verifyToken], auth.createEligibilityCheck);
+router.get('/user/eligibility-checks', [authJwt.verifyToken], auth.getAllEligibilityChecks);
+router.get('/user/eligibility-checks/:id', [authJwt.verifyToken], auth.getEligibilityCheckById);
+router.put('/user/eligibility-checks/:id', [authJwt.verifyToken], auth.updateEligibilityCheckById);
+router.delete('/user/eligibility-checks/:id', [authJwt.verifyToken], auth.deleteEligibilityCheckById);
+router.get('/user/financial-terms', [authJwt.verifyToken], auth.getAllFinancialTerms);
+router.get('/user/financial-terms/:termId', [authJwt.verifyToken], auth.getFinancialTermById);
+router.get('/user/banners', [authJwt.verifyToken], auth.getAllBanners);
+router.get('/user/banners/:id', [authJwt.verifyToken], auth.getBannerById);
+
+
 
 module.exports = router;
