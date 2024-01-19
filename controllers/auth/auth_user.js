@@ -12,6 +12,7 @@ const FinancialTerm = require('./../../models/creditInfoModel');
 const Category = require('../../models/categoryModel');
 const SubCategory = require('../../models/subCategoryModel');
 const Banner = require('../../models/bannerModel');
+const RatingReview = require('../../models/ratingModel');
 
 
 
@@ -544,6 +545,95 @@ exports.getBannerById = async (req, res) => {
     }
 };
 
+exports.createRatingReview = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ status: 404, message: 'User not found' });
+        }
+
+        const { rating, review } = req.body;
+
+        const newRatingReview = new RatingReview({ user: user._id, rating, review });
+        const savedRatingReview = await newRatingReview.save();
+
+        return res.status(201).json({ status: 201, data: savedRatingReview, message: 'Rating and review created successfully' });
+    } catch (error) {
+        console.error('Error creating rating and review:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.getAllRatingReviews = async (req, res) => {
+    try {
+        const ratingReviews = await RatingReview.find();
+
+        return res.status(200).json({ status: 200, data: ratingReviews });
+    } catch (error) {
+        console.error('Error fetching rating and reviews:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.getRatingReviewById = async (req, res) => {
+    try {
+        const ratingReview = await RatingReview.findById(req.params.id);
+
+        if (!ratingReview) {
+            return res.status(404).json({ status: 404, message: 'Rating and review not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: ratingReview });
+    } catch (error) {
+        console.error('Error fetching rating and review by ID:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.updateRatingReviewById = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ status: 404, message: 'User not found' });
+        }
+
+        const { rating, review } = req.body;
+
+        const updatedRatingReview = await RatingReview.findByIdAndUpdate(
+            req.params.id,
+            { rating, review },
+            { new: true }
+        );
+
+        if (!updatedRatingReview) {
+            return res.status(404).json({ status: 404, message: 'Rating and review not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: updatedRatingReview, message: 'Rating and review updated successfully' });
+    } catch (error) {
+        console.error('Error updating rating and review by ID:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.deleteRatingReviewById = async (req, res) => {
+    try {
+        const deletedRatingReview = await RatingReview.findByIdAndDelete(req.params.id);
+
+        if (!deletedRatingReview) {
+            return res.status(404).json({ status: 404, message: 'Rating and review not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: deletedRatingReview, message: 'Rating and review deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting rating and review by ID:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
 
 
 // module.exports = {

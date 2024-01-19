@@ -5,7 +5,7 @@ const auth = require("../../controllers/appController/adminController")
 
 const authJwt = require("../../middlewares/auth");
 
-const { profileImage, loanDetails, categoryImage, bannerImage, subCategory, creditImage } = require('../../middlewares/imageUpload');
+const { profileImage, loanDetails, categoryImage, bannerImage, subCategory, creditImage, productImage, benefitsImage } = require('../../middlewares/imageUpload');
 
 
 // api/user/
@@ -47,8 +47,31 @@ router.get('/financial-terms/:termId', [authJwt.isAdmin], auth.getFinancialTermB
 router.put('/financial-terms/:termId/images', [authJwt.isAdmin], creditImage.array('image'), auth.updateFinancialTerm);
 router.delete('/financial-terms/:termId', [authJwt.isAdmin], auth.deleteFinancialTerm);
 router.put('/financial-terms/:termId/images/:imageId', creditImage.single('image'), [authJwt.isAdmin], auth.updateFinancialTermImageFileById);
-
-
+router.post('/api/admin/partner', [authJwt.isAdmin], productImage.single('image'), auth.createPartner);
+router.get('/api/admin/partner', [authJwt.isAdmin], auth.getAllPartner);
+router.get('/api/admin/partner/:partnerId', [authJwt.isAdmin], auth.getPartnerById);
+router.put('/api/admin/partner/:partnerId', [authJwt.isAdmin], productImage.single('image'), auth.updatePartner);
+router.delete('/api/admin/partner/:partnerId', [authJwt.isAdmin], auth.deletePartner);
+router.post('/api/admin/benefits', [authJwt.isAdmin], benefitsImage.single('image'), auth.createBenefits);
+router.get('/api/admin/benefits', [authJwt.isAdmin], auth.getAllBenefits);
+router.get('/api/admin/benefits/:benefitsId', [authJwt.isAdmin], auth.getBenefitsById);
+router.put('/api/admin/benefits/:benefitsId', [authJwt.isAdmin], benefitsImage.single('image'), auth.updateBenefits);
+router.delete('/api/admin/benefits/:benefitsId', [authJwt.isAdmin], auth.deleteBenefits);
+router.post('/api/admin/faqs/create', [authJwt.isAdmin], auth.createFAQ);
+router.get('/api/admin/faqs', [authJwt.isAdmin], auth.getAllFAQs);
+router.get('/api/admin/faqs/:id', [authJwt.isAdmin], auth.getFAQById);
+router.put('/api/admin/faqs/:id', [authJwt.isAdmin], auth.updateFAQById);
+router.delete('/api/admin/faqs/:id', [authJwt.isAdmin], auth.deleteFAQById);
+router.post('/api/admin/terms-and-conditions', [authJwt.isAdmin], auth.createTermAndCondition);
+router.get('/api/admin/terms-and-conditions', [authJwt.isAdmin], auth.getAllTermAndCondition);
+router.get('/api/admin/terms-and-conditions/:id', [authJwt.isAdmin], auth.getTermAndConditionById);
+router.put('/api/admin/terms-and-conditions/:id', [authJwt.isAdmin], auth.updateTermAndConditionById);
+router.delete('/api/admin/terms-and-conditions/:id', [authJwt.isAdmin], auth.deleteTermAndConditionById);
+router.post('/api/admin/rating-reviews', [authJwt.isAdmin], auth.createRatingReview);
+router.get('/api/admin/rating-reviews', [authJwt.isAdmin], auth.getAllRatingReviews);
+router.get('/api/admin/rating-reviews/:id', [authJwt.isAdmin], auth.getRatingReviewById);
+router.put('/api/admin/rating-reviews/:id', [authJwt.isAdmin], auth.updateRatingReviewById);
+router.delete('/api/admin/rating-reviews/:id', [authJwt.isAdmin], auth.deleteRatingReviewById);
 
 
 

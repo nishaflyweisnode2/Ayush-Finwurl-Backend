@@ -44,6 +44,11 @@ router.get('/user/financial-terms', [authJwt.verifyToken], auth.getAllFinancialT
 router.get('/user/financial-terms/:termId', [authJwt.verifyToken], auth.getFinancialTermById);
 router.get('/user/banners', [authJwt.verifyToken], auth.getAllBanners);
 router.get('/user/banners/:id', [authJwt.verifyToken], auth.getBannerById);
+router.post('/user/rating-reviews', [authJwt.verifyToken], auth.createRatingReview);
+router.get('/user/rating-reviews', [authJwt.verifyToken], auth.getAllRatingReviews);
+router.get('/user/rating-reviews/:id', [authJwt.verifyToken], auth.getRatingReviewById);
+router.put('/user/rating-reviews/:id', [authJwt.verifyToken], auth.updateRatingReviewById);
+router.delete('/user/rating-reviews/:id', [authJwt.verifyToken], auth.deleteRatingReviewById);
 
 
 

@@ -14,6 +14,12 @@ const Category = require('../../models/categoryModel');
 const SubCategory = require('../../models/subCategoryModel');
 const Banner = require('../../models/bannerModel');
 const FinancialTerm = require('../../models/creditInfoModel');
+const Partner = require('../../models/partnerModel');
+const Benefits = require('../../models/benefitsModel');
+const FAQ = require('../../models/faqModel');
+const TermAndCondition = require('../../models/term&ConditionModel');
+const RatingReview = require('../../models/ratingModel');
+
 
 
 
@@ -793,3 +799,434 @@ exports.updateFinancialTermImageFileById = async (req, res) => {
     }
 };
 
+exports.createPartner = async (req, res) => {
+    try {
+
+        const { name, status } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ status: 400, error: "Image file is required" });
+        }
+
+        const category = new Partner({
+            name,
+            status,
+            image: req.file.path,
+        });
+
+        await category.save();
+
+        return res.status(201).json({ status: 201, message: 'Partner created successfully', data: category });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Partner creation failed', error: error.message });
+    }
+};
+
+exports.getAllPartner = async (req, res) => {
+    try {
+        const categories = await Partner.find();
+        return res.status(200).json({ status: 200, data: categories });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Error fetching Partner', error: error.message });
+    }
+};
+
+exports.getPartnerById = async (req, res) => {
+    try {
+        const partnerId = req.params.partnerId;
+
+        const category = await Partner.findById(partnerId);
+
+        if (!category) {
+            return res.status(404).json({ status: 404, message: 'Partner not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: category });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Error fetching Partner', error: error.message });
+    }
+};
+
+exports.updatePartner = async (req, res) => {
+    try {
+        const partnerId = req.params.partnerId;
+
+        const findCategory = await Partner.findById(partnerId);
+        if (!findCategory) {
+            return res.status(404).json({ message: "Partner Not Found", status: 404, data: {} });
+        }
+        let fileUrl;
+        if (req.file) {
+            fileUrl = req.file ? req.file.path : "";
+        }
+
+        let obj = {
+            name: req.body.name || findCategory.name,
+            status: req.body.status || findCategory.status,
+            description: req.body.description || findCategory.description,
+            image: fileUrl || findCategory.image,
+
+        }
+        const category = await Category.findByIdAndUpdate({ _id: partnerId }, { $set: obj }, { new: true });
+
+        if (!category) {
+            return res.status(404).json({ status: 404, message: 'Partner not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Partner updated successfully', data: category });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Partner update failed', error: error.message });
+    }
+};
+
+exports.deletePartner = async (req, res) => {
+    try {
+        const partnerId = req.params.partnerId;
+
+        const category = await Partner.findByIdAndDelete(partnerId);
+
+        if (!category) {
+            return res.status(404).json({ status: 404, message: 'Partner not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Partner deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Partner deletion failed', error: error.message });
+    }
+};
+
+exports.createBenefits = async (req, res) => {
+    try {
+
+        const { name, status, desc } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ status: 400, error: "Image file is required" });
+        }
+
+        const category = new Benefits({
+            name,
+            status,
+            image: req.file.path,
+            desc
+        });
+
+        await category.save();
+
+        return res.status(201).json({ status: 201, message: 'Benefits created successfully', data: category });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Benefits creation failed', error: error.message });
+    }
+};
+
+exports.getAllBenefits = async (req, res) => {
+    try {
+        const categories = await Benefits.find();
+        return res.status(200).json({ status: 200, data: categories });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Error fetching Benefits', error: error.message });
+    }
+};
+
+exports.getBenefitsById = async (req, res) => {
+    try {
+        const benefitsId = req.params.benefitsId;
+
+        const category = await Benefits.findById(benefitsId);
+
+        if (!category) {
+            return res.status(404).json({ status: 404, message: 'Benefits not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: category });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Error fetching Benefits', error: error.message });
+    }
+};
+
+exports.updateBenefits = async (req, res) => {
+    try {
+        const benefitsId = req.params.benefitsId;
+
+        const findCategory = await Benefits.findById(benefitsId);
+        if (!findCategory) {
+            return res.status(404).json({ message: "Benefits Not Found", status: 404, data: {} });
+        }
+        let fileUrl;
+        if (req.file) {
+            fileUrl = req.file ? req.file.path : "";
+        }
+
+        let obj = {
+            name: req.body.name || findCategory.name,
+            status: req.body.status || findCategory.status,
+            description: req.body.description || findCategory.description,
+            image: fileUrl || findCategory.image,
+            desc: req.body.desc || findCategory.desc,
+
+        }
+        const category = await Category.findByIdAndUpdate({ _id: benefitsId }, { $set: obj }, { new: true });
+
+        if (!category) {
+            return res.status(404).json({ status: 404, message: 'Benefits not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Benefits updated successfully', data: category });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Benefits update failed', error: error.message });
+    }
+};
+
+exports.deleteBenefits = async (req, res) => {
+    try {
+        const benefitsId = req.params.benefitsId;
+
+        const category = await Benefits.findByIdAndDelete(benefitsId);
+
+        if (!category) {
+            return res.status(404).json({ status: 404, message: 'Benefits not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Benefits deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Benefits deletion failed', error: error.message });
+    }
+};
+
+exports.createFAQ = async (req, res) => {
+    try {
+        const { question, answer } = req.body;
+        const newFAQ = await FAQ.create({ question, answer });
+        return res.status(201).json({ status: 201, data: newFAQ });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.getAllFAQs = async (req, res) => {
+    try {
+        const faqs = await FAQ.find();
+        return res.status(200).json({ status: 200, data: faqs });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.getFAQById = async (req, res) => {
+    try {
+        const faqId = req.params.id;
+        const faq = await FAQ.findById(faqId);
+
+        if (!faq) {
+            return res.status(404).json({ status: 404, message: 'FAQ not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: faq });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.updateFAQById = async (req, res) => {
+    try {
+        const faqId = req.params.id;
+        const updatedFAQ = await FAQ.findByIdAndUpdate(faqId, { $set: req.body }, { new: true });
+
+        if (!updatedFAQ) {
+            return res.status(404).json({ status: 404, message: 'FAQ not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: updatedFAQ });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.deleteFAQById = async (req, res) => {
+    try {
+        const faqId = req.params.id;
+        const deletedFAQ = await FAQ.findByIdAndDelete(faqId);
+
+        if (!deletedFAQ) {
+            return res.status(404).json({ status: 404, message: 'FAQ not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: deletedFAQ });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.createTermAndCondition = async (req, res) => {
+    try {
+        const { content } = req.body;
+
+        const termAndCondition = new TermAndCondition({ content });
+        await termAndCondition.save();
+
+        return res.status(201).json({ status: 201, message: 'Terms and Conditions created successfully', data: termAndCondition });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', details: error.message });
+    }
+};
+
+exports.getAllTermAndCondition = async (req, res) => {
+    try {
+        const termAndCondition = await TermAndCondition.find();
+
+        if (!termAndCondition) {
+            return res.status(404).json({ status: 404, message: 'Terms and Conditions not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: "Sucessfully", data: termAndCondition });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', details: error.message });
+    }
+};
+
+exports.getTermAndConditionById = async (req, res) => {
+    try {
+        const termAndConditionId = req.params.id;
+        const termAndCondition = await TermAndCondition.findById(termAndConditionId);
+
+        if (!termAndCondition) {
+            return res.status(404).json({ status: 404, message: 'Terms and Conditions not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Sucessfully', data: termAndCondition });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', details: error.message });
+    }
+};
+
+exports.updateTermAndConditionById = async (req, res) => {
+    try {
+        const termAndConditionId = req.params.id;
+        const { content } = req.body;
+
+        const updatedTermAndCondition = await TermAndCondition.findByIdAndUpdate(
+            termAndConditionId,
+            { content },
+            { new: true }
+        );
+
+        if (!updatedTermAndCondition) {
+            return res.status(404).json({ status: 404, message: 'Terms and Conditions not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Terms and Conditions updated successfully', data: updatedTermAndCondition });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', details: error.message });
+    }
+};
+
+exports.deleteTermAndConditionById = async (req, res) => {
+    try {
+        const termAndConditionId = req.params.id;
+        const deletedTermAndCondition = await TermAndCondition.findByIdAndDelete(termAndConditionId);
+
+        if (!deletedTermAndCondition) {
+            return res.status(404).json({ status: 404, message: 'Terms and Conditions not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Terms and Conditions deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', details: error.message });
+    }
+};
+
+exports.createRatingReview = async (req, res) => {
+    try {
+        const { user, rating, review } = req.body;
+
+        const newRatingReview = new RatingReview({ user, rating, review });
+        const savedRatingReview = await newRatingReview.save();
+
+        return res.status(201).json({ status: 201, data: savedRatingReview, message: 'Rating and review created successfully' });
+    } catch (error) {
+        console.error('Error creating rating and review:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.getAllRatingReviews = async (req, res) => {
+    try {
+        const ratingReviews = await RatingReview.find();
+
+        return res.status(200).json({ status: 200, data: ratingReviews });
+    } catch (error) {
+        console.error('Error fetching rating and reviews:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.getRatingReviewById = async (req, res) => {
+    try {
+        const ratingReview = await RatingReview.findById(req.params.id);
+
+        if (!ratingReview) {
+            return res.status(404).json({ status: 404, message: 'Rating and review not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: ratingReview });
+    } catch (error) {
+        console.error('Error fetching rating and review by ID:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.updateRatingReviewById = async (req, res) => {
+    try {
+        const { rating, review } = req.body;
+
+        const updatedRatingReview = await RatingReview.findByIdAndUpdate(
+            req.params.id,
+            { rating, review },
+            { new: true }
+        );
+
+        if (!updatedRatingReview) {
+            return res.status(404).json({ status: 404, message: 'Rating and review not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: updatedRatingReview, message: 'Rating and review updated successfully' });
+    } catch (error) {
+        console.error('Error updating rating and review by ID:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.deleteRatingReviewById = async (req, res) => {
+    try {
+        const deletedRatingReview = await RatingReview.findByIdAndDelete(req.params.id);
+
+        if (!deletedRatingReview) {
+            return res.status(404).json({ status: 404, message: 'Rating and review not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: deletedRatingReview, message: 'Rating and review deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting rating and review by ID:', error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
