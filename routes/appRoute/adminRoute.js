@@ -72,6 +72,16 @@ router.get('/api/admin/rating-reviews', [authJwt.isAdmin], auth.getAllRatingRevi
 router.get('/api/admin/rating-reviews/:id', [authJwt.isAdmin], auth.getRatingReviewById);
 router.put('/api/admin/rating-reviews/:id', [authJwt.isAdmin], auth.updateRatingReviewById);
 router.delete('/api/admin/rating-reviews/:id', [authJwt.isAdmin], auth.deleteRatingReviewById);
+router.post('/api/admin/contact-us', [authJwt.isAdmin], auth.createContactUs);
+router.get('/api/admin/contact-us', [authJwt.isAdmin], auth.getAllContactUsEntries);
+router.get('/api/admin/contact-us/:id', [authJwt.isAdmin], auth.getContactUsById);
+router.put('/api/admin/contact-us/:id', [authJwt.isAdmin], auth.updateContactUsById);
+router.delete('/api/admin/contact-us/:id', [authJwt.isAdmin], auth.deleteContactUsById);
+router.post('/api/admin/disclamer', [authJwt.isAdmin], auth.createDisclamer);
+router.get('/api/admin/disclamer', [authJwt.isAdmin], auth.getAllDisclamer);
+router.get('/api/admin/disclamer/:id', [authJwt.isAdmin], auth.getDisclamerById);
+router.put('/api/admin/disclamer/:id', [authJwt.isAdmin], auth.updateDisclamerById);
+router.delete('/api/admin/disclamer/:id', [authJwt.isAdmin], auth.deleteDisclamerById);
 
 
 

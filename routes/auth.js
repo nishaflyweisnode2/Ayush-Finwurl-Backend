@@ -49,7 +49,12 @@ router.get('/user/rating-reviews', [authJwt.verifyToken], auth.getAllRatingRevie
 router.get('/user/rating-reviews/:id', [authJwt.verifyToken], auth.getRatingReviewById);
 router.put('/user/rating-reviews/:id', [authJwt.verifyToken], auth.updateRatingReviewById);
 router.delete('/user/rating-reviews/:id', [authJwt.verifyToken], auth.deleteRatingReviewById);
-
-
+router.get('/user/contact-us', [authJwt.verifyToken], auth.getAllContactUsEntries);
+router.get('/user/contact-us/:id', [authJwt.verifyToken], auth.getContactUsById);
+router.get('/user/referral-link', [authJwt.verifyToken], auth.getReferralLink);
+router.get('/user/disclamer', [authJwt.verifyToken], auth.getAllDisclamer);
+router.get('/user/disclamer/:id', [authJwt.verifyToken], auth.getDisclamerById);
+router.get('/user/notifications/user/get', [authJwt.verifyToken], auth.getNotificationsForUser);
+router.put('/user/notifications/:notificationId', [authJwt.verifyToken], auth.markNotificationAsRead);
 
 module.exports = router;

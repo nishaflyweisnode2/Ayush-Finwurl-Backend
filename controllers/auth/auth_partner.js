@@ -5,6 +5,8 @@ const appPassword = process.env.EMAIL_APP_PASSWORD;
 const encryption = require("./../../func/encryption");
 const decryption = require("./../../func/decryption");
 const jwt = require('jsonwebtoken');
+const Notification = require('./../../models/notificationModel');
+
 
 
 const signup_partner = async (req, res) => {
@@ -43,9 +45,14 @@ const signup_partner = async (req, res) => {
       if (referral_link) {
 
         const decrypted_email = decryption(referral_link);
-        // console.log("decrypted_email", decrypted_email)
+        console.log("decrypted_email", decrypted_email)
 
-        const referral_user = await User.findOne({ email: decrypted_email });
+        const validEmail = decrypted_email.split('-').pop();
+        console.log("validEmail", validEmail);
+
+        const referral_user = await User.findOne({ email: validEmail });
+        console.log("referral_user", referral_user);
+        // const referral_user = await User.findOne({ email: decrypted_email });
         // console.log("referral_user", referral_user)
 
         if (referral_user) {
@@ -71,7 +78,14 @@ const signup_partner = async (req, res) => {
         subject: "Your FinURL password",
         text: `Hello ${name}! Your unique password is: ${userPassword}`,
       });
-
+      const welcomeMessage = `Welcome, ${user.name}! Thank you for registering.`;
+      const welcomeNotification = new Notification({
+        userId: user._id,
+        title: 'New Notification',
+        content: welcomeMessage,
+        type: 'welcome',
+      });
+      await welcomeNotification.save();
       res.status(200).json({ message: "User created", user: user });
     } else {
       res.status(409).json({ message: "User already exists!" });

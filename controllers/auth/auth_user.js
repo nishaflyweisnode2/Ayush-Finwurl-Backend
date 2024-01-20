@@ -13,6 +13,8 @@ const Category = require('../../models/categoryModel');
 const SubCategory = require('../../models/subCategoryModel');
 const Banner = require('../../models/bannerModel');
 const RatingReview = require('../../models/ratingModel');
+const Disclamer = require('../../models/disclamerModel');
+
 
 
 
@@ -634,6 +636,123 @@ exports.deleteRatingReviewById = async (req, res) => {
         return res.status(500).json({ status: 500, error: error.message });
     }
 };
+
+exports.getAllContactUsEntries = async (req, res) => {
+    try {
+        const contactUsEntries = await ContactUs.find();
+
+        const count = contactUsEntries.length;
+
+        res.status(200).json({ status: 200, data: count, contactUsEntries });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 500, message: 'Error fetching Contact Us entries', error: error.message });
+    }
+};
+
+exports.getContactUsById = async (req, res) => {
+    try {
+        const contactUsEntry = await ContactUs.findById(req.params.id);
+
+        if (!contactUsEntry) {
+            return res.status(404).json({ status: 404, message: 'Contact Us entry not found' });
+        }
+
+        res.status(200).json({ status: 200, data: contactUsEntry });
+    } catch (error) {
+        console.error('Error fetching Contact Us entry by ID:', error);
+        res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.getReferralLink = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({
+            status: 200, data: {
+                user
+            },
+            referralLink: user.referral_link
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
+exports.getAllDisclamer = async (req, res) => {
+    try {
+        const termAndCondition = await Disclamer.find();
+
+        if (!termAndCondition) {
+            return res.status(404).json({ status: 404, message: 'Disclamer not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: "Sucessfully", data: termAndCondition });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', details: error.message });
+    }
+};
+
+exports.getDisclamerById = async (req, res) => {
+    try {
+        const termAndConditionId = req.params.id;
+        const termAndCondition = await Disclamer.findById(termAndConditionId);
+
+        if (!termAndCondition) {
+            return res.status(404).json({ status: 404, message: 'Disclamer not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Sucessfully', data: termAndCondition });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', details: error.message });
+    }
+};
+
+exports.markNotificationAsRead = async (req, res) => {
+    try {
+        const notificationId = req.params.notificationId;
+
+        const notification = await Notification.findByIdAndUpdate(
+            notificationId,
+            { status: 'read' },
+            { new: true }
+        );
+
+        if (!notification) {
+            return res.status(404).json({ status: 404, message: 'Notification not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Notification marked as read', data: notification });
+    } catch (error) {
+        return res.status(500).json({ status: 500, message: 'Error marking notification as read', error: error.message });
+    }
+};
+
+exports.getNotificationsForUser = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ status: 404, message: 'User not found' });
+        }
+
+        const notifications = await Notification.find({ userId: userId }).populate('userId');
+
+        return res.status(200).json({ status: 200, message: 'Notifications retrieved successfully', data: notifications });
+    } catch (error) {
+        return res.status(500).json({ status: 500, message: 'Error retrieving notifications', error: error.message });
+    }
+};
+
 
 
 // module.exports = {
