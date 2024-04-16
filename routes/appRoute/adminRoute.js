@@ -5,7 +5,7 @@ const auth = require("../../controllers/appController/adminController")
 
 const authJwt = require("../../middlewares/auth");
 
-const { profileImage, loanDetails, categoryImage, bannerImage, subCategory, creditImage, productImage, benefitsImage } = require('../../middlewares/imageUpload');
+const { profileImage, loanDetails, categoryImage, bannerImage, subCategory, creditImage, productImage, kpUpload, benefitsImage } = require('../../middlewares/imageUpload');
 
 
 // api/user/
@@ -47,10 +47,10 @@ router.get('/financial-terms/:termId', [authJwt.isAdmin], auth.getFinancialTermB
 router.put('/financial-terms/:termId/images', [authJwt.isAdmin], creditImage.array('image'), auth.updateFinancialTerm);
 router.delete('/financial-terms/:termId', [authJwt.isAdmin], auth.deleteFinancialTerm);
 router.put('/financial-terms/:termId/images/:imageId', creditImage.single('image'), [authJwt.isAdmin], auth.updateFinancialTermImageFileById);
-router.post('/api/admin/partner', [authJwt.isAdmin], productImage.single('image'), auth.createPartner);
+router.post('/api/admin/partner', [authJwt.isAdmin], kpUpload, auth.createPartner);
 router.get('/api/admin/partner', [authJwt.isAdmin], auth.getAllPartner);
 router.get('/api/admin/partner/:partnerId', [authJwt.isAdmin], auth.getPartnerById);
-router.put('/api/admin/partner/:partnerId', [authJwt.isAdmin], productImage.single('image'), auth.updatePartner);
+router.put('/api/admin/partner/:partnerId', [authJwt.isAdmin], kpUpload, auth.updatePartner);
 router.delete('/api/admin/partner/:partnerId', [authJwt.isAdmin], auth.deletePartner);
 router.post('/api/admin/benefits', [authJwt.isAdmin], benefitsImage.single('image'), auth.createBenefits);
 router.get('/api/admin/benefits', [authJwt.isAdmin], auth.getAllBenefits);

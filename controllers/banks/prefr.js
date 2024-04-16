@@ -18,7 +18,7 @@ const dedupe = async (req, res) => {
     if (response.data.status === "success") {
       res.status(200).json(response.data.status);
     } else {
-      res.status(400).json({ errors: response.data.errors[0]});
+      res.status(400).json({ errors: response.data.errors[0] });
     }
   } catch (error) {
     console.log(error.response.data);

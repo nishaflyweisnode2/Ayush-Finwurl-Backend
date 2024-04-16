@@ -14,7 +14,10 @@ const SubCategory = require('../../models/subCategoryModel');
 const Banner = require('../../models/bannerModel');
 const RatingReview = require('../../models/ratingModel');
 const Disclamer = require('../../models/disclamerModel');
-
+const Benefits = require('../../models/benefitsModel');
+const Partner = require('../../models/partnerModel');
+const FAQ = require('../../models/faqModel');
+const TermAndCondition = require('../../models/term&ConditionModel');
 
 
 
@@ -753,7 +756,116 @@ exports.getNotificationsForUser = async (req, res) => {
     }
 };
 
+exports.getAllBenefits = async (req, res) => {
+    try {
+        const categories = await Benefits.find();
+        return res.status(200).json({ status: 200, data: categories });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Error fetching Benefits', error: error.message });
+    }
+};
 
+exports.getBenefitsById = async (req, res) => {
+    try {
+        const benefitsId = req.params.benefitsId;
+
+        const category = await Benefits.findById(benefitsId);
+
+        if (!category) {
+            return res.status(404).json({ status: 404, message: 'Benefits not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: category });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Error fetching Benefits', error: error.message });
+    }
+};
+
+exports.getAllPartner = async (req, res) => {
+    try {
+        const categories = await Partner.find();
+        return res.status(200).json({ status: 200, data: categories });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Error fetching Partner', error: error.message });
+    }
+};
+
+exports.getPartnerById = async (req, res) => {
+    try {
+        const partnerId = req.params.partnerId;
+
+        const category = await Partner.findById(partnerId);
+
+        if (!category) {
+            return res.status(404).json({ status: 404, message: 'Partner not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: category });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'Error fetching Partner', error: error.message });
+    }
+};
+
+exports.getAllTermAndCondition = async (req, res) => {
+    try {
+        const termAndCondition = await TermAndCondition.find();
+
+        if (!termAndCondition) {
+            return res.status(404).json({ status: 404, message: 'Terms and Conditions not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: "Sucessfully", data: termAndCondition });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', details: error.message });
+    }
+};
+
+exports.getTermAndConditionById = async (req, res) => {
+    try {
+        const termAndConditionId = req.params.id;
+        const termAndCondition = await TermAndCondition.findById(termAndConditionId);
+
+        if (!termAndCondition) {
+            return res.status(404).json({ status: 404, message: 'Terms and Conditions not found' });
+        }
+
+        return res.status(200).json({ status: 200, message: 'Sucessfully', data: termAndCondition });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', details: error.message });
+    }
+};
+
+exports.getAllFAQs = async (req, res) => {
+    try {
+        const faqs = await FAQ.find();
+        return res.status(200).json({ status: 200, data: faqs });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
+
+exports.getFAQById = async (req, res) => {
+    try {
+        const faqId = req.params.id;
+        const faq = await FAQ.findById(faqId);
+
+        if (!faq) {
+            return res.status(404).json({ status: 404, message: 'FAQ not found' });
+        }
+
+        return res.status(200).json({ status: 200, data: faq });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, error: error.message });
+    }
+};
 
 // module.exports = {
 //   signup_user,

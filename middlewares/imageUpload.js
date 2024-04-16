@@ -21,10 +21,15 @@ const storage5 = new CloudinaryStorage({ cloudinary: cloudinary, params: { folde
 const creditImage = multer({ storage: storage5 });
 const storage6 = new CloudinaryStorage({ cloudinary: cloudinary, params: { folder: "AyushFinwurl/productImage", allowed_formats: ["jpg", "jpeg", "png", "PNG", "xlsx", "xls", "pdf", "PDF", "jiff", "JIFF", "jfif", "JFIF", "mp4", "MP4", "webm", "WEBM"], }, });
 const productImage = multer({ storage: storage6 });
+var kpUpload = productImage.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'aggrementImage', maxCount: 1 },
+    { name: 'softImage', maxCount: 1 },
+]);
 const storage7 = new CloudinaryStorage({ cloudinary: cloudinary, params: { folder: "AyushFinwurl/benefitsImage", allowed_formats: ["jpg", "jpeg", "png", "PNG", "xlsx", "xls", "pdf", "PDF", "jiff", "JIFF", "jfif", "JFIF", "mp4", "MP4", "webm", "WEBM"], }, });
 const benefitsImage = multer({ storage: storage7 });
 
 
 
 
-module.exports = { profileImage, loanDetails, categoryImage, bannerImage, subCategory, creditImage, productImage, benefitsImage }
+module.exports = { profileImage, loanDetails, categoryImage, bannerImage, subCategory, creditImage, productImage, kpUpload, benefitsImage }

@@ -1,14 +1,27 @@
 const mongoose = require("mongoose");
+const schema = mongoose.Schema;
+
 
 const leadsSchema = new mongoose.Schema(
   {
-    partner: String,
+    partner: {
+      type: schema.Types.ObjectId,
+      ref: "users",
+    },
     full_name: String,
-    phone_number: String,
-    pan_number: String,
-    aadhar_number: String,
     lender_bank: String,
     amount: Number,
+    date: Date,
+    status: {
+      type: String,
+      enum: ["Accept", "Reject", "Pending"],
+      default: "Pending"
+    },
+    loanType: [{
+      type: schema.Types.ObjectId,
+      ref: "subCategory",
+    }]
+
   },
   {
     timestamps: true,

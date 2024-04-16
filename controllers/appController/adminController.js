@@ -804,16 +804,20 @@ exports.updateFinancialTermImageFileById = async (req, res) => {
 exports.createPartner = async (req, res) => {
     try {
 
-        const { name, status } = req.body;
+        const { name, status, date } = req.body;
 
-        if (!req.file) {
-            return res.status(400).json({ status: 400, error: "Image file is required" });
-        }
+        const image = req.files['image'] ? req.files['image'][0].path : null;
+        const aggrementImage = req.files['aggrementImage'] ? req.files['aggrementImage'][0].path : null;
+        const softImage = req.files['softImage'] ? req.files['softImage'][0].path : null;
+
 
         const category = new Partner({
             name,
             status,
-            image: req.file.path,
+            image,
+            aggrementImage,
+            softImage,
+            date: date || new Date(),
         });
 
         await category.save();
@@ -855,24 +859,35 @@ exports.getPartnerById = async (req, res) => {
 exports.updatePartner = async (req, res) => {
     try {
         const partnerId = req.params.partnerId;
-
-        const findCategory = await Partner.findById(partnerId);
+        const findCategory = await Partner.findOne({ _id: partnerId });
         if (!findCategory) {
-            return res.status(404).json({ message: "Partner Not Found", status: 404, data: {} });
-        }
-        let fileUrl;
-        if (req.file) {
-            fileUrl = req.file ? req.file.path : "";
+            return res.status(404).json({ message: "Partner Not Found525", status: 404, data: {} });
         }
 
-        let obj = {
+        let image = findCategory.image;
+        let aggrementImage = findCategory.aggrementImage;
+        let softImage = findCategory.softImage;
+
+        if (req.files['image']) {
+            image = req.files['image'][0].path;
+        }
+        if (req.files['aggrementImage']) {
+            aggrementImage = req.files['aggrementImage'][0].path;
+        }
+        if (req.files['softImage']) {
+            softImage = req.files['softImage'][0].path;
+        }
+
+        const updateObj = {
             name: req.body.name || findCategory.name,
             status: req.body.status || findCategory.status,
             description: req.body.description || findCategory.description,
-            image: fileUrl || findCategory.image,
-
-        }
-        const category = await Category.findByIdAndUpdate({ _id: partnerId }, { $set: obj }, { new: true });
+            date: req.body.date || findCategory.date,
+            image,
+            aggrementImage,
+            softImage
+        };
+        const category = await Partner.findByIdAndUpdate({ _id: partnerId }, { $set: updateObj }, { new: true });
 
         if (!category) {
             return res.status(404).json({ status: 404, message: 'Partner not found' });
@@ -975,7 +990,7 @@ exports.updateBenefits = async (req, res) => {
             desc: req.body.desc || findCategory.desc,
 
         }
-        const category = await Category.findByIdAndUpdate({ _id: benefitsId }, { $set: obj }, { new: true });
+        const category = await Benefits.findByIdAndUpdate({ _id: benefitsId }, { $set: obj }, { new: true });
 
         if (!category) {
             return res.status(404).json({ status: 404, message: 'Benefits not found' });

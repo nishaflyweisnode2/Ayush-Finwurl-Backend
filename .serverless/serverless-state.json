@@ -179,7 +179,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ayush-finurl-backend/dev/1705909985448-2024-01-22T07:53:05.448Z/ayush-finurl-backend.zip"
+                "S3Key": "serverless/ayush-finurl-backend/dev/1713263385448-2024-04-16T10:29:45.448Z/ayush-finurl-backend.zip"
               },
               "Handler": "app.handler",
               "Runtime": "nodejs18.x",
@@ -197,14 +197,14 @@
               "AppLogGroup"
             ]
           },
-          "AppLambdaVersionW03X2P92ZZf1ONlY1m1lR1wnWh0xFlAez1CUtdINY": {
+          "AppLambdaVersionXBiE4eCjKDs9mIyqIRCjYXdoImVNc0L5xI02vKS27oQ": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AppLambdaFunction"
               },
-              "CodeSha256": "05NHOUxhAEx5OlTwa2+uRMa6WGeAHNRMEsCypsuK+9c="
+              "CodeSha256": "xDq2E+jR3wmtyeS3EZJu9f2c71mdsLOXSY5tCfxN5PA="
             }
           },
           "ApiGatewayRestApi": {
@@ -425,7 +425,7 @@
               "AppLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1705909894688": {
+          "ApiGatewayDeployment1713263306697": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -490,7 +490,7 @@
           "AppLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AppLambdaVersionW03X2P92ZZf1ONlY1m1lR1wnWh0xFlAez1CUtdINY"
+              "Ref": "AppLambdaVersionXBiE4eCjKDs9mIyqIRCjYXdoImVNc0L5xI02vKS27oQ"
             },
             "Export": {
               "Name": "sls-ayush-finurl-backend-dev-AppLambdaFunctionQualifiedArn"
@@ -671,7 +671,7 @@
         "timeout": 6,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "AppLambdaVersionW03X2P92ZZf1ONlY1m1lR1wnWh0xFlAez1CUtdINY"
+        "versionLogicalId": "AppLambdaVersionXBiE4eCjKDs9mIyqIRCjYXdoImVNc0L5xI02vKS27oQ"
       }
     },
     "configValidationMode": "warn",
@@ -690,10 +690,10 @@
     },
     "layers": {},
     "isDashboardMonitoringPreconfigured": false,
-    "artifact": "C:\\Users\\HP\\Downloads\\Ayush-Finwurl-Backend\\.serverless\\ayush-finurl-backend.zip"
+    "artifact": "D:\\Project\\Ayush-Finwurl-Backend\\.serverless\\ayush-finurl-backend.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/ayush-finurl-backend/dev/1705909985448-2024-01-22T07:53:05.448Z",
+    "artifactDirectoryName": "serverless/ayush-finurl-backend/dev/1713263385448-2024-04-16T10:29:45.448Z",
     "artifact": "ayush-finurl-backend.zip"
   }
 }

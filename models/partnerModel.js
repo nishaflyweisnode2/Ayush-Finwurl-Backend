@@ -3,11 +3,18 @@ const mongoose = require("mongoose");
 const PartnerSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
     },
     image: {
         type: String,
-        required: true,
+    },
+    aggrementImage: {
+        type: String,
+    },
+    softImage: {
+        type: String,
+    },
+    date: {
+        type: Date,
     },
     status: {
         type: Boolean,
