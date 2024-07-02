@@ -18,8 +18,22 @@ const Benefits = require('../../models/benefitsModel');
 const Partner = require('../../models/partnerModel');
 const FAQ = require('../../models/faqModel');
 const TermAndCondition = require('../../models/term&ConditionModel');
+const crypto = require('crypto');
 
 
+
+const generateAuthKey = (phoneNumber, partner, privateKey) => {
+    const cryptoAlgo = 'sha256';
+    const payload = `${phoneNumber}|${partner}`;
+    
+    const hmac = crypto.createHmac(cryptoAlgo, privateKey);
+    hmac.update(payload, 'utf8');
+    
+    const hmacBytes = hmac.digest();
+    const authKey = hmacBytes.toString('base64');
+    
+    return authKey;
+};
 
 exports.signup_user = async (req, res) => {
     try {
@@ -72,9 +86,14 @@ exports.signup_user = async (req, res) => {
             });
             await welcomeNotification.save();
 
+            const privateKey = '84b361f96c9f893bed588af3cdb6d10e';
+            const authKey = generateAuthKey(phoneNumber, user._id, privateKey);
+            console.log(authKey);
+
+
             res
                 .status(200)
-                .json({ message: "User created", user: user, isDSA: user.isDSA });
+                .json({ message: "User created", user: user, isDSA: user.isDSA, authKey: authKey });
         } else {
             res.status(409).json({ message: "User already exists!" });
         }

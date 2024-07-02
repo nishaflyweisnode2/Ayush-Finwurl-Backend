@@ -87,9 +87,13 @@ const webviewAPI = async (req, res) => {
         },
       }
     );
-    console.log(response);
+    console.log(req.body.loggedInUserId);
+
+    // console.log(response);
     if (response.data.status === "success") {
       const data = { ...req.body.formData, bank_name: "prefr" };
+      console.log(data);
+
       user.loans.push(data);
       await user.save();
       res.status(200).json(response.data);

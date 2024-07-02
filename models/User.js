@@ -42,11 +42,12 @@ const UserSchema = new mongoose.Schema(
     panNumber: {
       type: String,
       // required: true,
-      unique: true,
+      // unique: true,
       match: [
         /^[A-Z]{5}[0-9]{4}[A-Z]$/,
         "Please enter a valid Pan card Number",
       ],
+      default: null
     },
     pincode: {
       type: Number,

@@ -173,11 +173,6 @@ exports.uploadProfilePicture = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        const { error } = updateUserSchema.validate(req.body);
-        if (error) {
-            return res.status(400).json({ message: error.details[0].message });
-        }
-
         const userId = req.params.userId;
 
         const user = await User.findById(userId);
@@ -186,11 +181,11 @@ exports.updateProfile = async (req, res) => {
             return res.status(404).json({ status: 404, message: 'User not found' });
         }
 
-        if (req.body.userName) {
-            user.userName = req.body.userName;
+        if (req.body.name) {
+            user.name = req.body.name;
         }
-        if (req.body.mobileNumber) {
-            user.mobileNumber = req.body.mobileNumber;
+        if (req.body.phoneNumber) {
+            user.phoneNumber = req.body.phoneNumber;
         }
 
         if (req.body.password) {

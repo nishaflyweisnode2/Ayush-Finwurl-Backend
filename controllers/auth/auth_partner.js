@@ -6,29 +6,46 @@ const encryption = require("./../../func/encryption");
 const decryption = require("./../../func/decryption");
 const jwt = require('jsonwebtoken');
 const Notification = require('./../../models/notificationModel');
+const crypto = require('crypto');
 
+
+
+const generateAuthKey = (phoneNumber, partner, privateKey) => {
+  const cryptoAlgo = 'sha256';
+  const payload = `${phoneNumber}|${partner}`;
+
+  const hmac = crypto.createHmac(cryptoAlgo, privateKey);
+  hmac.update(payload, 'utf8');
+
+  const hmacBytes = hmac.digest();
+  const authKey = hmacBytes.toString('base64');
+
+
+
+  return authKey;
+};
 
 
 const signup_partner = async (req, res) => {
   try {
-    const { name, phoneNumber, email, panNumber, referral_link } = req.body;
+    const { name, phoneNumber, email, password, panNumber, referral_link } = req.body;
 
     const existingUser = await User.findOne({
       $or: [{ email: email }, { phoneNumber: phoneNumber }],
     });
 
     if (!existingUser) {
-      const passString =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&1234567890";
-      let userPassword = "";
-      for (i = 0; i < 8; i++) {
-        let randomSymbol =
-          passString[Math.floor(Math.random() * passString.length)];
-        userPassword = userPassword + randomSymbol;
-      }
+      // const passString =
+      //   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&1234567890";
+      // let userPassword = "";
+      // for (i = 0; i < 8; i++) {
+      //   let randomSymbol =
+      //     passString[Math.floor(Math.random() * passString.length)];
+      //   userPassword = userPassword + randomSymbol;
+      // }
 
       const salt = await bcrypt.genSalt(7);
-      const hashedPassword = await bcrypt.hash(userPassword, salt);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
       const user = await User.create({
         name: name,
@@ -36,6 +53,7 @@ const signup_partner = async (req, res) => {
         phoneNumber: phoneNumber,
         panNumber: panNumber,
         email: email,
+        // password: password,
         isDSA: false,
         referral_link: `https://www.finurl.in/authentication/referral/${encryption(
           email
@@ -62,22 +80,22 @@ const signup_partner = async (req, res) => {
           return res.status(404).json({ message: "Invalid referral link" });
         }
       }
-      let transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        auth: {
-          user: "no-reply@finurl.in",
-          pass: appPassword,
-        },
-      });
+      // let transporter = nodemailer.createTransport({
+      //   host: "smtp.gmail.com",
+      //   port: 587,
+      //   secure: false,
+      //   auth: {
+      //     user: "no-reply@finurl.in",
+      //     pass: appPassword,
+      //   },
+      // });
 
-      await transporter.sendMail({
-        from: "no-reply@finurl.in",
-        to: email,
-        subject: "Your FinURL password",
-        text: `Hello ${name}! Your unique password is: ${userPassword}`,
-      });
+      // await transporter.sendMail({
+      //   from: "no-reply@finurl.in",
+      //   to: email,
+      //   subject: "Your FinURL password",
+      //   text: `Hello ${name}! Your unique password is: ${userPassword}`,
+      // });
       const welcomeMessage = `Welcome, ${user.name}! Thank you for registering.`;
       const welcomeNotification = new Notification({
         userId: user._id,
@@ -86,12 +104,67 @@ const signup_partner = async (req, res) => {
         type: 'welcome',
       });
       await welcomeNotification.save();
-      res.status(200).json({ message: "User created", user: user });
+
+      const privateKey = '3003f6d02hFawF9rhJA23HzppTfso1xNx';
+      const authKey = generateAuthKey(phoneNumber, user._id, privateKey);
+      console.log(authKey);
+
+      res.status(200).json({ message: "User created", user: user, authKey: authKey });
     } else {
       res.status(409).json({ message: "User already exists!" });
     }
   } catch (error) {
     console.log(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const login_partner1 = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const loggedInUser = await User.findOne({ email: email });
+
+    if (loggedInUser) {
+      const isCorrect = await bcrypt.compare(password, loggedInUser.password);
+      if (isCorrect) {
+        const otp = 100000 + Math.floor(Math.random() * 900000);
+        // let transporter = nodemailer.createTransport({
+        //   host: "smtp.gmail.com",
+        //   port: 587,
+        //   secure: false,
+        //   auth: {
+        //     user: "no-reply@finurl.in",
+        //     pass: appPassword,
+        //   },
+        // });
+
+        // await transporter.sendMail({
+        //   from: "no-reply@finurl.in",
+        //   to: email,
+        //   subject: "Your FinURL password",
+        //   text: `Hello ! Your unique OTP is: ${otp}`,
+        // });
+        if (loggedInUser.referral_link == "") {
+          loggedInUser.referral_link = `https://www.finurl.in/authentication/referral/${encryption(
+            email
+          )}`;
+          await loggedInUser.save();
+        }
+        await User.findOneAndUpdate(
+          { _id: loggedInUser._id },
+          { $set: { otp: otp } }
+        );
+        await loggedInUser.save();
+
+        res.status(200).json({ message: "OTP sent to the user", data: loggedInUser });
+      } else {
+        res.status(401).json({ error: "Invalid Password" });
+      }
+    } else {
+      res.status(400).json({ msg: "No such user exists!" });
+    }
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
@@ -106,33 +179,16 @@ const login_partner = async (req, res) => {
       const isCorrect = await bcrypt.compare(password, loggedInUser.password);
       if (isCorrect) {
         const otp = 100000 + Math.floor(Math.random() * 900000);
-        let transporter = nodemailer.createTransport({
-          host: "smtp.gmail.com",
-          port: 587,
-          secure: false,
-          auth: {
-            user: "no-reply@finurl.in",
-            pass: appPassword,
-          },
-        });
 
-        await transporter.sendMail({
-          from: "no-reply@finurl.in",
-          to: email,
-          subject: "Your FinURL password",
-          text: `Hello ! Your unique OTP is: ${otp}`,
-        });
         if (loggedInUser.referral_link == "") {
           loggedInUser.referral_link = `https://www.finurl.in/authentication/referral/${encryption(
             email
           )}`;
-          await loggedInUser.save();
         }
-        await User.findOneAndUpdate(
-          { _id: loggedInUser._id },
-          { $set: { otp: otp } }
-        );
-        res.status(200).json({ message: "OTP sent to the user" });
+        loggedInUser.otp = otp;
+        await loggedInUser.save();
+
+        res.status(200).json({ message: "OTP sent to the user", data: loggedInUser });
       } else {
         res.status(401).json({ error: "Invalid Password" });
       }
